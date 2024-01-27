@@ -6,7 +6,7 @@ define alignment=1;
 #   0x008000-0x00A800: internal RAM (4-10 kiB)
 #   0x00A800-0x00FC00: (reserved)
 #   0x00FC00-0x010000: I/O control registers (1 kiB)
-#   0x010000-0x080000: external RAM (up to 512 kiB)
+#   0x010000-0x080000: external RAM (up to 448 kiB)
 #   0x080000-0x0C0000: internal ROM (128-256 kiB)
 #   0x0C0000-0x200000: (reserved)
 #   0x200000-0xFFFFFF: external RAM (up to 14 MiB)

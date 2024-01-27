@@ -349,10 +349,13 @@
     <symbol name="LBSWL" address="0xFFCC" /> <!-- 16 bits, no access noted -->
     <symbol name="LBSWH" address="0xFFCE" /> <!-- 16 bits, no access noted -->
   </default_symbols>
-  
+
+<!-- Matsushita Pub.No.22360-013E, fig. 1-1-2 -->
   <default_memory_blocks>
-    <memory_block name="ioregs" start_address="0x00FC00" length="0x400" mode="rw" initialized="false" />
-    <memory_block name="intram" start_address="0x008000" length="0x1000" mode="rw" initialized="false" /> <!-- length varies by processor -->
-    <!--<memory_block name="introm" start_address="0x080000" length="0x20000" mode="rx" />--> <!-- length varies by processor -->
+    <memory_block name="iram"  start_address="0x008000" length="0x002800" mode="rwx" initialized="false" /> <!-- length varies by model -->
+    <memory_block name="mmio"  start_address="0x00FC00" length="0x000400" mode="rwv" initialized="false" />
+    <memory_block name="eram1" start_address="0x010000" length="0x070000" mode="rwx" initialized="false" />
+    <memory_block name="rom"   start_address="0x080000" length="0x040000" mode="rx" initialized="true" /> <!-- length varies by model -->
+    <memory_block name="eram2" start_address="0x200000" length="0xE00000" mode="rwx" initialized="false" />
   </default_memory_blocks>
 </processor_spec>
