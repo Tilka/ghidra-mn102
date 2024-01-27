@@ -1,80 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- Ref: https://github.com/NationalSecurityAgency/ghidra/blob/Ghidra_10.4_build/Ghidra/Framework/SoftwareModeling/data/languages/compiler_spec.rxg -->
 <compiler_spec>
-  <!-- http://hitmen.c02.at/files/yagcd/yagcd/chap5.html#sec5.7.4 -->
-  <global>
-    <range space="ram"/>
-    <range space="register"/>
-  </global>
-  <data_organization>
-    <absolute_max_alignment value="0" /> <!-- no maximum alignment -->
-    <machine_alignment value="2" />
-    <default_alignment value="2" />
-    <default_pointer_alignment value="4" />
-    <pointer_size value="3" />
-    <short_size value="2" />
-    <integer_size value="3" />
-    <long_size value="4" />
-    <size_alignment_map>
-      <entry size="1" alignment="1" />
-      <entry size="2" alignment="2" />
-      <entry size="3" alignment="2" />
-      <entry size="4" alignment="4" />
-    </size_alignment_map>
-  </data_organization>
-  <stackpointer register="SP" space="ram" growth="negative"/>
-  <returnaddress>
-    <varnode space="stack" offset="0" size="3"/>
-  </returnaddress>
-  <default_proto>
-    <prototype name="__stdcall" extrapop="0" stackshift="0" strategy="register">
-      <!-- Complete guess! -->
-      <input>
-        <pentry minsize="1" maxsize="3">
-          <register name="D0"/>
-        </pentry>
-        <pentry minsize="1" maxsize="3">
-          <register name="D1"/>
-        </pentry>
-        <pentry minsize="3" maxsize="3">
-          <register name="A0"/>
-        </pentry>
-      </input>
-      <output>
-        <pentry minsize="1" maxsize="3">
-          <register name="D0"/>
-        </pentry>
-      </output>
-      <unaffected>
-        <register name="D2"/>
-        <register name="D3"/>
-        <register name="A1"/>
-        <register name="A2"/>
-        <register name="SP"/>
-      </unaffected>
-      <killedbycall>
-        <register name="PSW_ZF" />
-        <register name="PSW_NF" />
-        <register name="PSW_CF" />
-        <register name="PSW_VF" />
-        <register name="PSW_ZX" />
-        <register name="PSW_NX" />
-        <register name="PSW_CX" />
-        <register name="PSW_VX" />
-      </killedbycall>
-      <!--<localrange>
-        <range space="stack" first="0x0" last="0xf"/>
-      </localrange>-->
-    </prototype>
-  </default_proto>
-  
-  <!--<callfixup name="switch_override_ACC">
-    <pcode>
-      <body><![CDATA[
-			PC = inst_next + zext(ACC) * 3;
-            goto [PC];
-      ]]></body>
-    </pcode>
-  </callfixup>-->
-  
+	<!-- Matsushita Pub.No.12320-050, section 7.1.1 -->
+	<data_organization>
+		<machine_alignment value="2" />
+		<pointer_size value="3" />
+		<short_size value="2" />
+		<integer_size value="2" />
+		<long_size value="4" />
+		<size_alignment_map>
+			<entry size="1" alignment="1" />
+			<entry size="2" alignment="2" />
+			<entry size="3" alignment="4" />
+		</size_alignment_map>
+	</data_organization>
+
+	<global>
+		<range space="ram" />
+	</global>
+	<stackpointer register="SP" space="ram" growth="negative" />
+	<returnaddress>
+		<varnode space="stack" offset="0" size="3" />
+	</returnaddress>
+	<default_proto>
+		<!-- Matsushita Pub.No.12320-050, section 5.4.2 -->
+		<prototype name="__mncall" extrapop="4" stackshift="4">
+			<input>
+				<pentry minsize="1" maxsize="3" metatype="ptr">
+					<register name="A0" />
+				</pentry>
+				<pentry minsize="1" maxsize="3">
+					<register name="D0" />
+				</pentry>
+				<pentry minsize="1" maxsize="3">
+					<register name="D1" />
+				</pentry>
+				<pentry minsize="1" maxsize="512" align="2">
+					<addr offset="4" space="stack" />
+				</pentry>
+			</input>
+			<output>
+				<pentry minsize="1" maxsize="3" metatype="ptr">
+					<register name="A0" />
+				</pentry>
+				<pentry minsize="1" maxsize="3">
+					<register name="D0" />
+				</pentry>
+				<pentry minsize="1" maxsize="512" align="2">
+					<addr offset="4" space="stack" />
+				</pentry>
+			</output>
+			<unaffected>
+				<register name="D2" />
+				<register name="D3" />
+				<register name="A1" />
+				<register name="A2" />
+				<register name="SP" />
+			</unaffected>
+		</prototype>
+	</default_proto>
 </compiler_spec>

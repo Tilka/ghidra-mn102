@@ -1,8 +1,12 @@
-A SLEIGH processor spec for [Ghidra](https://github.com/NationalSecurityAgency/ghidra) for the Matsushita (Panasonic) MN102 processor.  The MN102 is used by the Nintendo GameCube and Wii for the disc drive.
+# Matsuhita MN102 series processor definition for Ghidra
+
+Many thanks to the original work done by [Pokechu22](https://github.com/Pokechu22/ghidra-mn102-lang).
+The MN102 is used by the Nintendo GameCube and Wii disc drives.
 
 ## Installation
 
-This repository should be placed within the Ghidra install as the folder `Ghidra/Processors/MN102`, such that `Ghidra/Processors/MN102/data` is the path to the `data` folder.  Ghidra should automatically add it to the available processor list on its next start, and compile the files when it is first used.
+* Build the extension: `$ gradle`
+* Install the resulting `dist/ghidra_*_ghidra-h8-300.zip` using `File -> Install Extensions...`
 
 ## Manuals
 
@@ -11,6 +15,7 @@ Various processor manuals were once available on Panasonic's website.  Unfortuna
 The MN102**L** instruction manual is [readily available](http://hitmen.c02.at/files/docs/gc/12250-030e.pdf "MD5: 0219bb3c4efb30aa29351fce0e607b01e; SHA-512: 617b3b2025c1eac51796f685ac9f932ed48f85a3a1197e2108bc3dab9937b9ceb4c39cd10dcde24ec727643fa2dc458a37f4e43e28ca0d3dd95e1321a583d1d3"), but it is for the L variant; per [YAGCD](http://hitmen.c02.at/files/yagcd/yagcd/chap5.html#sec5.7.4) the GameCube uses MN102**H**60GFA.  According to [some product advertising (Pub.No.A000130E, DSA0038294)](https://www.datasheetarchive.com/pdf/download.php?id=7f495d85946b293cc511466b51257a8f2a7523 "MD5: 568235060e006347c75fde79849165cf; SHA-512: c9609630a5de0a56fb2dab7949157cdaa5a2bdf409eafc22d75b3f24344077ef181b7736c0ec093a3c2643788eca8a5a91a85ce3fe57b51afd3fcf6dfe0fce64"), the H version features a hardware multiplier; it actually has some other instructions as well.  Unfortunately, I couldn't find the MN102**H** instruction manual, but several versions of the LSI User's Manual are available, and they include a table of instructions at the end (along with other useful hardware information).  There are at least 3 relevant versions: a [Japanese-language MN10200 series manual (Pub.No.22399-031,  DSA00163540)](https://www.datasheetarchive.com/pdf/download.php?id=b71bc2f3557d4262221f932c55e9f628886b5d "MD5: 1d6e6f090323b08ba1ba6ea689b55f79; SHA-512: b1a98a4f4cfe32990e51c92dbdc38a198ff362dd95bf8feeaab9ff99d4c5458b0bc5b6251fc5350f8656c0d28d29928a9dc2d9be75f6dfc6f4bda55416bdf715"), the [English 1st edition, 1st printing MN102H60G/60K/F60G/F60K LSI User's Manual (Pub.No.22360-011E, DSA00163538)](https://www.datasheetarchive.com/pdf/download.php?id=774b216252be90158be73a949901c252f8878b "MD5: 8547ae70dc805a945e1ac66365700102; SHA-512: cc43ef1e8a174897c103efcd163571f9bb336605c79dbc70f175146121870e3563a753f4e03796f4d88a0a456d85de3114a1c9a0f742f702285934877f24fe03"), and the [English 1st edition, 3rd printing MN102H60G/60K/F60G/F60K LSI User's Manual (Pub.No.22360-013E, DSAH00424716)](https://www.datasheetarchive.com/pdf/download.php?id=c1e2428d529ca2ee89bc232235fd6b988d3ef9 "MD5: 199e73f4d9af63b1041433bd2b2c8492; SHA-512: aa40f59b0ab8c72c823ef6bd8505dc8caaf6052669420ae595281f7cff356534caf683ab170ef14ca6736c72530b0942d37db571137581c2beab0704b8d75f71").
 
 ## Notes
+
 ### `MOVB Dm,(An)`
 
 The `MOVB Dm,(An)` instruction has incorrect information in the manual.  It claims that it's encoded as `10+Dm<<2+An`, which would result in `0x12` being `MOVB D0,(A2)`.  However, it should be `10+An<<2+Dm`, which would result in `0x12` being `MOVB D2,(A0)`.  Most other instructions have the first register unshifted and the second shifted by 2; for instance, `MOVB Dm,(d8,An)` is encoded as `F5 : 10+An<<2+Dm : d8` (for instance, `MOVB D2,(2,A0)` is `F5 12 02`).  This is the case in all manuals I've checked.

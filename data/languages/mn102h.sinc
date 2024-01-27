@@ -1,0 +1,89 @@
+@define ST  "PSW[14,1]"  # Saturation bit
+
+# Meanings
+BPOS:   imm3 is imm3 { local v:1 = (1 << imm3); export v; }
+
+A0O8B:  "("^d8^", A0)"  is d8   { local p = A0 + sext(d8:1); export *:1 p; }
+A1O8B:  "("^d8^", A1)"  is d8   { local p = A1 + sext(d8:1); export *:1 p; }
+A2O8B:  "("^d8^", A2)"  is d8   { local p = A2 + sext(d8:1); export *:1 p; }
+SPO8B:  "("^d8^", SP)"  is d8   { local p = SP + sext(d8:1); export *:1 p; }
+
+
+# Matsushita Pub.No.12350-040, section 2:
+
+# Arithmetic calculation instructions
+
+:MULQ r1D, r2D is op8=0xF5; op4=0x6 & r1D & r2D; op8=0x10 {
+    local c:4 = sext(r1D:2) * sext(r2D:2);
+    local m = (c >> 16);
+    r2D = c:3;
+    MDR = m:2;
+}
+
+macro mulql(r, a, b) {
+    local c:4 = a * b;
+    a = c:3;
+}
+:MULQL r1D,   r2D is op8=0xF5; op4=0x4 & r1D & r2D; op8=0x0             { mulql(r2D, sext(r1D:2), sext(r2D:2)); }
+:MULQL SIMM8,  r2D is op8=0xF5; op4=0xF & op2mid=0 & r2D; op8=0x4; SIMM8  { mulql(r2D, sext(SIMM8), sext(r2D:2)); }
+:MULQL SIMM16, r2D is op8=0xF5; op4=0xF & op2mid=1 & r2D; op8=0x8; SIMM16 { mulql(r2D, sext(SIMM16), sext(r2D:2)); }
+
+macro mulqh(r, a, b) {
+    local c:4 = a * b;
+    local m = c >> 16;
+    r = sext(m:2);
+}
+:MULQH r1D,   r2D is op8=0xF5; op4=0x4 & r1D & r2D; op8=0x1             { mulqh(r2D, sext(r1D:2), sext(r2D:2)); }
+:MULQH SIMM8,  r2D is op8=0xF5; op4=0xF & op2mid=0 & r2D; op8=0x5; SIMM8  { mulqh(r2D, sext(SIMM8), sext(r2D:2)); }
+:MULQH SIMM16, r2D is op8=0xF5; op4=0xF & op2mid=1 & r2D; op8=0x9; SIMM16 { mulqh(r2D, sext(SIMM16), sext(r2D:2)); }
+
+# Logical calculation instructions
+
+:BSET IMM8, I16B  is op8=0xF4; op8=0xE3; I16B; IMM8 { I16B = I16B | IMM8; }
+:BSET IMM8, I24B  is op8=0xF4; op8=0x4B; I24B; IMM8 { I24B = I24B | IMM8; }
+:BSET IMM8, (D8, r2A) is op8=0xF4; op4=0xE & op2mid=1 & r2A; D8; IMM8 {
+    local p = r2A + sext(D8);
+    *:1 p = *:1 p | IMM8;
+}
+
+:BSET I16B^BPOS  is op8=0xF5; op4=0xD & op1=0 & BPOS; I16B            { I16B = I16B | BPOS; }
+:BSET I24B^BPOS  is op8=0xF3; op8=0xFE; op4=0xD & op1=0 & BPOS; I24B  { I24B = I24B | BPOS; }
+:BSET A0O8B^BPOS is op8=0xF5; op4=0x9 & op1=0 & BPOS; A0O8B           { A0O8B = A0O8B | BPOS; }
+:BSET A1O8B^BPOS is op8=0xF5; op4=0x9 & op1=1 & BPOS; A1O8B           { A1O8B = A1O8B | BPOS; }
+:BSET A2O8B^BPOS is op8=0xF3; op8=0xFF; op4=0x9 & op1=0 & BPOS; A2O8B { A2O8B = A2O8B | BPOS; }
+:BSET SPO8B^BPOS is op8=0xF3; op8=0xFF; op4=0x9 & op1=1 & BPOS; SPO8B { SPO8B = SPO8B | BPOS; }
+
+:BCLR IMM8, I16B  is op8=0xF4; op8=0xE7; I16B; IMM8 { I16B = I16B & ~IMM8; }
+:BCLR IMM8, I24B  is op8=0xF4; op8=0x4F; I24B; IMM8 { I24B = I24B & ~IMM8; }
+:BCLR IMM8, (D8, r2A) is op8=0xF4; op4=0xE & op2mid=3 & r2A; D8; IMM8 {
+    local p = r2A + sext(D8);
+    *:1 p = *:1 p & ~IMM8;
+}
+
+:BCLR I16B^BPOS  is op8=0xF5; op4=0xD & op1=1 & BPOS; I16B            { I16B = I16B & ~BPOS; }
+:BCLR I24B^BPOS  is op8=0xF3; op8=0xFE; op4=0xD & op1=1 & BPOS; I24B  { I24B = I24B & ~BPOS; }
+:BCLR A0O8B^BPOS is op8=0xF5; op4=0xB & op1=0 & BPOS; A0O8B           { A0O8B = A0O8B & ~BPOS; }
+:BCLR A1O8B^BPOS is op8=0xF5; op4=0xB & op1=1 & BPOS; A1O8B           { A1O8B = A1O8B & ~BPOS; }
+:BCLR A2O8B^BPOS is op8=0xF3; op8=0xFF; op4=0xB & op1=0 & BPOS; A2O8B { A2O8B = A2O8B & ~BPOS; }
+:BCLR SPO8B^BPOS is op8=0xF3; op8=0xFF; op4=0xB & op1=1 & BPOS; SPO8B { SPO8B = SPO8B & ~BPOS; }
+
+macro tbz(r, d, v) {
+    $(VF) = 0;
+    $(CF) = 0;
+    $(NF) = 0;
+    $(ZF) = (r == 0);
+    if ($(ZF) == v)
+        goto d;
+}
+
+TC1: ""  is op1=0   { local c:1 = 1; export c; }
+TC1: "N" is op1=1   { local c:1 = 0; export c; }
+TC2: ""  is op4=0x8 { local c:1 = 1; export c; }
+TC2: "N" is op4=0xA { local c:1 = 0; export c; }
+
+:TB^TC1^"Z" I16B^BPOS,  PCREL8 is op8=0xF5; op4=0xC & TC1 & BPOS; I16B; PCREL8           { tbz(I16B & BPOS,  PCREL8, TC1); }
+:TB^TC1^"Z" I24B^BPOS,  PCREL8 is op8=0xF3; op8=0xFE; op4=0xC & TC1 & BPOS; I24B; PCREL8 { tbz(I24B & BPOS,  PCREL8, TC1); }
+:TB^TC2^"Z" A0O8B^BPOS, PCREL8 is op8=0xF5; TC2 & op1=0 & BPOS; A0O8B; PCREL8            { tbz(A0O8B & BPOS, PCREL8, TC2); }
+:TB^TC2^"Z" A1O8B^BPOS, PCREL8 is op8=0xF5; TC2 & op1=1 & BPOS; A1O8B; PCREL8            { tbz(A1O8B & BPOS, PCREL8, TC2); }
+:TB^TC2^"Z" A2O8B^BPOS, PCREL8 is op8=0xF3; op8=0xFF; TC2 & op1=0 & BPOS; A2O8B; PCREL8  { tbz(A2O8B & BPOS, PCREL8, TC2); }
+:TB^TC2^"Z" SPO8B^BPOS, PCREL8 is op8=0xF3; op8=0xFF; TC2 & op1=1 & BPOS; SPO8B; PCREL8  { tbz(SPO8B & BPOS, PCREL8, TC2); }
