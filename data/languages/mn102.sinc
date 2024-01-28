@@ -507,7 +507,7 @@ CCX: "NS" is imm4=0xF { local c:1 = ($(NX) == 1); export c; }
     call PCREL24;
 }
 
-:JSR R1R is op8=0xF0; op4=0x1 & R1R & op2lo=0 {
+:JSR R1R is op8=0xF0; op4=0x0 & R1R & op2lo=1 {
     SP = SP - 4;
     *[ram]:3 SP = inst_next;
     call [R1R];
