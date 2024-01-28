@@ -22,7 +22,7 @@ SPO8B:  "("^d8^", SP)"  is d8   { local p = SP + sext(d8:1); export *:1 p; }
 
 macro mulql(r, a, b) {
     local c:4 = a * b;
-    a = c:3;
+    r = c:3;
 }
 :MULQL r1D,   r2D is op8=0xF5; op4=0x4 & r1D & r2D; op8=0x0             { mulql(r2D, sext(r1D:2), sext(r2D:2)); }
 :MULQL SIMM8,  r2D is op8=0xF5; op4=0xF & op2mid=0 & r2D; op8=0x4; SIMM8  { mulql(r2D, sext(SIMM8), sext(r2D:2)); }
