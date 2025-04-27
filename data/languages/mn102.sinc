@@ -201,7 +201,7 @@ I24T:   "("^imm24^")" is imm24 { export *:3 imm24; }
 :EXT    r1D is op8=0xF3; op4=0xC & r1D & op2lo=1 { local c:4 = sext(r1D:2); local m = c >> 16; MDR = m:2; }
 :EXTX   r2D is op4=0xB & op2mid=0 & r2D { r2D = sext(r2D:2); }
 :EXTXU  r2D is op4=0xB & op2mid=1 & r2D { r2D = zext(r2D:2); }
-:EXTB   r2D is op4=0xB & op2mid=2 & r2D { r2D = sext(r2D:1); }
+:EXTXB  r2D is op4=0xB & op2mid=2 & r2D { r2D = sext(r2D:1); }
 :EXTXBU r2D is op4=0xB & op2mid=3 & r2D { r2D = zext(r2D:1); }
 
 # Arithmetic calculation instructions
