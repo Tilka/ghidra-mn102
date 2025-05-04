@@ -306,10 +306,10 @@ macro update_mul(r, a, b) {
 :SUB r1A, r2D is op8=0xF2; op4=0xD & r1A & r2D { update_sub(r2D, r1A); }
 :SUB r1A, r2A is op8=0xF2; op4=0x5 & r1A & r2A { update_sub(r2A, r1A); }
 
-:SUB SIMM16, r2D is op8=0xF7; op4=0x1 & op2mid=3 & r2D; SIMM16 { update_add(r2D, sext(SIMM16)); }
-:SUB SIMM24, r2D is op8=0xF4; op4=0x6 & op2mid=2 & r2D; SIMM24 { update_add(r2D, sext(SIMM24)); }
-:SUB SIMM16, r2A is op8=0xF7; op4=0x0 & op2mid=3 & r2A; SIMM16 { update_add(r2A, sext(SIMM16)); }
-:SUB SIMM24, r2A is op8=0xF4; op4=0x6 & op2mid=3 & r2A; SIMM24 { update_add(r2A, sext(SIMM24)); }
+:SUB SIMM16, r2D is op8=0xF7; op4=0x1 & op2mid=3 & r2D; SIMM16 { update_sub(r2D, sext(SIMM16)); }
+:SUB SIMM24, r2D is op8=0xF4; op4=0x6 & op2mid=2 & r2D; SIMM24 { update_sub(r2D, sext(SIMM24)); }
+:SUB SIMM16, r2A is op8=0xF7; op4=0x0 & op2mid=3 & r2A; SIMM16 { update_sub(r2A, sext(SIMM16)); }
+:SUB SIMM24, r2A is op8=0xF4; op4=0x6 & op2mid=3 & r2A; SIMM24 { update_sub(r2A, sext(SIMM24)); }
 
 :SUBC  r1D, r2D is op8=0xF2; op4=0x9 & r1D & r2D { local c:3 = zext($(CF)); update_sub3(r2D, r1D, c); }
 
